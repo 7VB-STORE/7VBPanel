@@ -1,0 +1,109 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_7VBPanel"
+       xmlns:Elements="clr-namespace:_7VBPanel.UI.Elements" x:Class="_7VBPanel.MainWindow"
+       mc:Ignorable="d"
+WindowStyle="None"
+ResizeMode="NoResize"
+Background="Transparent"
+AllowsTransparency="True"
+Title="7VP Panel" Height="480" Width="900" MouseDown="Window_MouseDown" Loaded="Window_Loaded">
+    <Border x:Name="MainWindowXAML" CornerRadius="12" BorderThickness="4"  Padding="0" Background="#151515">
+        <Grid>
+            <Image Height="30" Source="/Resources/Icons/Discord.png"  Margin="736,59,116,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown_2" />
+            <Image x:Name="CloseButton" Cursor="Hand" HorizontalAlignment="Left" Height="10" Margin="858,21,0,0" VerticalAlignment="Top" Width="10" Source="/UI/Icons/CloseIcon.png" MouseLeftButtonDown="CloseButton_MouseLeftButtonDown"/>
+            <Border  Cursor="Hand" HorizontalAlignment="Left" Background="Transparent" Height="10" Margin="840,21,0,0" VerticalAlignment="Top" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                <Image x:Name="MinimazeButton"  Width="10"  Margin="0,7,0,0" Source="/UI/Icons/Minimize Icon.png"/>
+            </Border>
+            <Grid Margin="35,130,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" Height="315">
+                <Border CornerRadius="4" BorderThickness="1" BorderBrush="#B8B8B8" />
+                <ListBox x:Name="AccountListBox" Background="Transparent" Margin="0,5,0,0" BorderThickness="0" >
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="5,-2,0,0"/>
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+            <Grid Margin="656,299,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="146" Width="200">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="33*"/>
+                    <RowDefinition Height="142*"/>
+                </Grid.RowDefinitions>
+                <Border Width="200" CornerRadius="4" BorderThickness="1" BorderBrush="#B8B8B8" Grid.RowSpan="2" />
+                <Label Content="Lobby 2" Margin="0,0,0,118" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="11" Foreground="#D3D3D3" Grid.RowSpan="2" />
+                <Border  Height="1" Width="200" VerticalAlignment="Top" HorizontalAlignment="Center" CornerRadius="4" BorderThickness="1" BorderBrush="#B8B8B8" Margin="0,25,0,0" />
+                <Label x:Name="Lobby2LeaderLabel" Visibility="Collapsed" Content="Leader" Foreground="Yellow" Margin="5,27,5,0" Height="32" VerticalAlignment="Top" Grid.RowSpan="2" />
+                <ListBox x:Name="Lobby2BotsListBox" Background="Transparent" Margin="5,31,5,0" BorderThickness="0" Grid.Row="1" >
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="5,-2,0,0"/>
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+            <Grid Margin="656,130,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="148" Width="200">
+                <Border Width="200" CornerRadius="4" BorderThickness="1" BorderBrush="#B8B8B8" />
+                <Label Content="Lobby 1" Margin="0,0,0,122" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="11" Foreground="#D3D3D3" />
+                <Border  Height="1" Width="200" CornerRadius="4" BorderThickness="1" BorderBrush="#B8B8B8" VerticalAlignment="Top" HorizontalAlignment="Left"  Margin="0,25,0,0" />
+                <Label x:Name="Lobby1LeaderLabel" Visibility="Collapsed" Content="Leader" Foreground="Yellow" Margin="5,27,5,0" Height="32" VerticalAlignment="Top" />
+                <ListBox x:Name="Lobby1BotsListBox" Background="Transparent" Margin="5,64,5,0" BorderThickness="0" >
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="5,-2,0,0"/>
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+            <Image HorizontalAlignment="Left" Height="48" Margin="40,52,0,0" VerticalAlignment="Top" Width="42" Source="/Resources/Icons/Logo.png"/>
+            <Label Content="ECLIPSE PANEL" FontSize="16" HorizontalAlignment="Left" Margin="87,52,0,0" VerticalAlignment="Top" Foreground="White"/>
+            <Label Content="Free Farm" FontSize="12" HorizontalAlignment="Left" Margin="87,74,0,0" VerticalAlignment="Top" Foreground="White"/>
+
+            <Elements:ButtonWIthTextOnly ButtonText="Start" HorizontalAlignment="Left" Margin="321,130,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick" Loaded="ButtonWIthTextOnly_Loaded"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Move windows" HorizontalAlignment="Left" Margin="321,248,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick_1"/>
+            <Elements:TextBox x:Name="CS2ArgumentsTextBox" Placeholder="CS2 Arguments" HorizontalAlignment="Left" Margin="321,417,0,0" VerticalAlignment="Top" Width="293"/>
+            <Elements:SelectPathButton x:Name="SteamPathBtn" ButtonCircleColor="Red" ButtonText="Steam Path" HorizontalAlignment="Left" Margin="484,130,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="SelectPathButton_ButtonClick"/>
+            <Elements:SelectPathButton x:Name="CS2PathBtn" ButtonCircleColor="Red" ButtonText="CS2 Path" HorizontalAlignment="Left" Margin="484,168,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="SelectPathButton_ButtonClick_1"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Kill All" HorizontalAlignment="Left" Margin="484,248,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick_2" RenderTransformOrigin="0.501,0.252"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Kill" HorizontalAlignment="Left" Margin="321,168,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick_3"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Shuffle Lobbies" HorizontalAlignment="Left" Margin="321,283,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick_4"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Collect Lobbies" HorizontalAlignment="Left" Margin="321,333,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_CollectLobbies"/>
+            <Elements:ButtonWIthTextOnly ButtonText="Disban Lobbies" HorizontalAlignment="Left" Margin="321,368,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_DisbanLobbies"/>
+            <Image Height="30" Source="/Resources/Icons/Telegram.png" Margin="784,59,68,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown_1" />
+            <Image Height="30" Source="/Resources/Icons/WebSite.png" Margin="688,59,164,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
+            <Image Source="/Resources/Icons/Logo2.png" Margin="390,56,449,384" RenderTransformOrigin="1.422,0.622" />
+            <Label Content="7VB.STORE" HorizontalAlignment="Left" Foreground="White" FontSize="15" Margin="440,58,0,0" VerticalAlignment="Top" Height="28" Width="90" RenderTransformOrigin="0.507,1"/>
+
+        </Grid>
+    </Border>
+</Window>
