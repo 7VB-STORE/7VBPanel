@@ -1,0 +1,103 @@
+# Основные файлы Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Кэш, журналы и временные файлы
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+
+# Сборки
+[Bb]in/
+[Oo]bj/
+# Исключаем папку Build из игнорирования
+Build/
+
+# Пакеты NuGet
+*.nupkg
+# Исключаем конфигурационные файлы NuGet из игнорирования
+!*.nuspec
+*.nupkg.sha512
+packages/
+# Исключаем папку packages из игнорирования
+packages/build/
+packages/repositories.config
+
+# Файлы продуктивности, создаваемые по требованию
+*.swp
+*.[Pp]ublish.xml
+*.cache
+*.diff
+*.err
+*.orig
+*.rej
+*.sublime-workspace
+*.tmproj
+*.userprefs
+
+# Конфигурации серверов и CI/CD
+App_Data/
+
+# Папки и файлы, создаваемые утилитами и расширениями
+_ReSharper.*
+/[Oo]bj/
+bin/
+*.vspscc
+*.vssscc
+_UpgradeReport_Files/
+Backup*/
+upgradeLog*/
+upgradeLog*.XML
+
+# Папки, созданные работающими службами и инструментами
+[Oo]ut/
+[Aa]pp_Data/
+
+# Статистика
+*.coverage
+*.coveragexml
+*.log
+
+# Профайлеры
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Динамические файлы
+*.appx
+*.appxsym
+*.appxupload
+*.py
+
+# Конфигурационные файлы
+*.appconfig
+*.siteconfig
+
+# Файлы ресурсов
+*.settings
+
+# Исключаем папку Libs из игнорирования, чтобы включить все DLL файлы
+!Libs/
+!Libs/*.dll
