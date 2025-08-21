@@ -31,7 +31,7 @@ namespace _7VBPanel.Instances
             ProcessStartInfo processStartInfo = new ProcessStartInfo
             {
                 FileName = $"{SettingsManager.SteamPath}" + $"\\steam.exe",
-                Arguments = $"-silent -login -nofriendsui -vgui -master_ipc_name_override {accountInstance.Login} -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl -disable-winh264 -language english -applaunch 730 -noborder -con_logfile {accountInstance.Login}.log -exec boost.cfg " + SettingsManager.CS2Arguments,
+                Arguments = $"-silent -login -nofriendsui -vgui -master_ipc_name_override {accountInstance.Login} -noverifyfiles -nobootstrapupdate -skipinitialbootstrap -norepairfiles -overridepackageurl -disable-winh264 -language english -applaunch 730 -noborder -con_logfile -nosound {accountInstance.Login}.log -exec boost.cfg " + SettingsManager.CS2Arguments,
                 UseShellExecute = false
             };
             SteamProcess.StartInfo = processStartInfo;

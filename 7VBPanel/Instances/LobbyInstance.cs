@@ -38,19 +38,19 @@ namespace _7VBPanel.Instances
                 Thread.Sleep(1000);
                 Leader.CS2Client.ClickMouseInWindowCoordinates(195, 140);
                 Thread.Sleep(1500);
-                for (int i = 142; i <= 220; i += 5)
+                for (int i = 142; i <= 220; i += 15)
                 {
                     Leader.CS2Client.ClickMouseInWindowCoordinates(235, i);
-                    Thread.Sleep(1);
+                    Thread.Sleep(0);
                 }
-                Leader.CS2Client.ClickMouseInWindowCoordinates(235, 165);
+                Leader.CS2Client.inputSimulator.Keyboard.KeyPress(VirtualKeyCode.ESCAPE);
             }
-            Thread.Sleep(1000);
+            Thread.Sleep(1500);
             foreach (var bot in Bots)
             {
                 bot.CS2Client.MoveMouseToWindowCoordinates(380, 100);
-                Thread.Sleep(500);
-                bot.CS2Client.ClickMouseInWindowCoordinates(306, 37);
+                Thread.Sleep(1000);
+                bot.CS2Client.ClickMouseInWindowCoordinates(306, 33);
             }
         }
         public void DisbanLobbies()

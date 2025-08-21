@@ -23,7 +23,7 @@ namespace _7VBPanel.Managers
         {
             { nameof(CS2Path), "None" },
             { nameof(SteamPath), "None" },
-            { nameof(CS2Arguments), "-high -nohltv -nojoy -nosound -noaafonts -noaafonts2 -noipx -noubershader -nod3d9ex -novid -cl_forcepreload 1 +violence_hblood 0 +sethdmodels 0 +r_dynamic 0 +cl_disablehtmlmotd 1 +mat_disable_fancy_blending 1" }
+            { nameof(CS2Arguments), "-swapcores -windowed -noborder -high -nohltv -nojoy -nosound -noaafonts -noaafonts2 -noipx -noubershader -nod3d9ex -novid -cl_forcepreload 1 +violence_hblood 0 +sethdmodels 0 +r_dynamic 0 +cl_disablehtmlmotd 1 +mat_disable_fancy_blending 1 +engine_no_focus_sleep 120" }
         };
 
         public static void SaveSettings()

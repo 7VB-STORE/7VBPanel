@@ -26,12 +26,35 @@ namespace _7VBPanel.Instances
         }
         public void Setup()
         {
-            while (CS2Process == null)
+            while (CS2Process == null || CS2Process.MainWindowHandle == IntPtr.Zero)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
+
             CS2_WindowComponent.Setup(CS2Process.MainWindowHandle);
+
+            // Принудительно устанавливаем размер окна
+            Task.Run(() =>
+            {
+                int attempts = 0;
+                while (attempts < 10)
+                {
+                    if (Win32.ForceWindowSize(CS2Process.MainWindowHandle, 360, 270))
+                    {
+                        Console.WriteLine("✅ Размер окна успешно изменен на 360x270");
+                        break;
+                    }
+                    attempts++;
+                    Thread.Sleep(500);
+                }
+
+                if (attempts >= 10)
+                {
+                    Console.WriteLine("❌ Не удалось изменить размер окна");
+                }
+            });
         }
+
         public void Stop()
         {
             try
@@ -89,6 +112,7 @@ namespace _7VBPanel.Instances
             int ConvertedY = (int)(65535 * (correctedY + 1) / screenHeight);
             inputSimulator.Mouse.MoveMouseTo(ConvertedX, ConvertedY);
         }
+
     }
 
 }
