@@ -1,4 +1,5 @@
 ﻿using System;
+using _7VBPanel.Managers;
 using _7VBPanel.Utils;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -26,8 +27,8 @@ namespace _7VBPanel.Components
 
         public class WindowConfig
         {
-            public int Width { get; set; } = 360;
-            public int Height { get; set; } = 270;
+            public int Width { get; set; }
+            public int Height { get; set; }
             public bool WithBorders { get; set; } = true;
             public Point Position { get; set; } = Point.Empty;
             public string Title { get; set; } = "Counter-Strike 2";
@@ -78,7 +79,15 @@ namespace _7VBPanel.Components
 
         public CS2WindowComponent(WindowConfig config = null)
         {
-            _currentConfig = config?.Clone() ?? new WindowConfig();
+            if (config != null)
+                _currentConfig = config.Clone();
+            else
+            {
+                _currentConfig = new WindowConfig();
+                SettingsManager.GetCs2WindowClientSize(out int w, out int h);
+                _currentConfig.Width = w;
+                _currentConfig.Height = h;
+            }
             ValidateConfig(_currentConfig);
         }
 
@@ -94,6 +103,16 @@ namespace _7VBPanel.Components
                 throw new ArgumentOutOfRangeException("Monitoring interval must be at least 50ms");
         }
 
+        /// <summary>
+        /// Обновить Width/Height из CS2Arguments (-w/-h) перед первым ApplyConfig.
+        /// </summary>
+        public void SyncClientSizeFromArguments()
+        {
+            SettingsManager.GetCs2WindowClientSize(out int w, out int h);
+            _currentConfig.Width = w;
+            _currentConfig.Height = h;
+        }
+
         public void Setup(IntPtr cs2Window)
         {
             if (cs2Window == IntPtr.Zero)
@@ -101,6 +120,16 @@ namespace _7VBPanel.Components
 
             _cs2Window = cs2Window;
             ApplyConfig();
+        }
+
+        /// <summary>
+        /// Смена HWND без ApplyConfig (для раскладки: окно тот же процесс, другой top-level).
+        /// </summary>
+        public void RebindWindowHandle(IntPtr cs2Window)
+        {
+            if (cs2Window == IntPtr.Zero || !IsWindow(cs2Window))
+                return;
+            _cs2Window = cs2Window;
         }
 
         public void UpdateConfig(WindowConfig newConfig)
@@ -149,24 +178,31 @@ namespace _7VBPanel.Components
 
             try
             {
-                bool result = SetWindowPos(
-                    _cs2Window,
-                    IntPtr.Zero,
-                    x,
-                    y,
-                    0,
-                    0,
-                    SWP_NOSIZE | SWP_NOZORDER | SWP_DPISCALED
-                );
+                // Всегда в паре с CS2Arguments (-w/-h), иначе размер окна и раскладка разъезжаются
+                SettingsManager.GetCs2WindowClientSize(out int cw, out int ch);
+                _currentConfig.Width = cw;
+                _currentConfig.Height = ch;
+                if (!SetExactClientSize(_cs2Window, cw, ch))
+                {
+                    int err0 = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(err0, "SetExactClientSize failed in MoveCSWindow");
+                }
 
-                if (!result)
+                if (!SetWindowPos(
+                        _cs2Window,
+                        IntPtr.Zero,
+                        x,
+                        y,
+                        0,
+                        0,
+                        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED))
                 {
                     int error = Marshal.GetLastWin32Error();
-                    throw new Win32Exception(error, $"Failed to move window to ({x},{y})");
+                    throw new Win32Exception(error, $"SetWindowPos move failed ({x},{y})");
                 }
 
                 _currentConfig.Position = new Point(x, y);
-                Console.WriteLine($"✅ Window moved to: {x}x{y}");
+                Console.WriteLine($"✅ Window moved to: ({x},{y}) client {cw}×{ch}");
             }
             catch (Exception ex)
             {

@@ -23,7 +23,7 @@ namespace _7VBPanel.Managers
         {
             { nameof(CS2Path), "None" },
             { nameof(SteamPath), "None" },
-            { nameof(CS2Arguments), "-swapcores -windowed -noborder -high -nohltv -nojoy -nosound -noaafonts -noaafonts2 -noipx -noubershader -nod3d9ex -novid -cl_forcepreload 1 +violence_hblood 0 +sethdmodels 0 +r_dynamic 0 +cl_disablehtmlmotd 1 +mat_disable_fancy_blending 1 +engine_no_focus_sleep 120" }
+            { nameof(CS2Arguments), "-allowmultiple -swapcores -windowed -noborder -high -nohltv -nojoy -nosound -noaafonts -noaafonts2 -noipx -noubershader -nod3d9ex -novid -cl_forcepreload 1 +violence_hblood 0 +sethdmodels 0 +r_dynamic 0 +cl_disablehtmlmotd 1 +mat_disable_fancy_blending 1 +engine_no_focus_sleep 120" }
         };
 
         public static void SaveSettings()
@@ -135,6 +135,29 @@ namespace _7VBPanel.Managers
         {
             string[] lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", "boost.cfg"));
             return string.Join(Environment.NewLine, lines);
+        }
+
+        /// <summary>
+        /// Клиентский размер окна CS2: берётся из <see cref="CS2Arguments"/> (-w и -h), иначе 360×270.
+        /// Должен совпадать с аргументами запуска, иначе раскладка окон и клики уходят в сторону.
+        /// </summary>
+        public static void GetCs2WindowClientSize(out int width, out int height)
+        {
+            width = 360;
+            height = 270;
+            if (string.IsNullOrWhiteSpace(CS2Arguments))
+                return;
+            try
+            {
+                var wMatch = Regex.Match(CS2Arguments, @"(?:^|\s)-w\s*(\d+)", RegexOptions.IgnoreCase);
+                var hMatch = Regex.Match(CS2Arguments, @"(?:^|\s)-h\s*(\d+)", RegexOptions.IgnoreCase);
+                if (wMatch.Success) width = int.Parse(wMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+                if (hMatch.Success) height = int.Parse(hMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                // оставляем 360×270
+            }
         }
 
         public static string CS2Path { get; set; }

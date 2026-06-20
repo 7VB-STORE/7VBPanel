@@ -19,6 +19,39 @@ namespace _7VBPanel.Utils
             return Array.FindAll(processes, process => IsChildProcess(process, parentPID));
         }
 
+        /// <summary>
+        /// Прямой дочерний процесс по WMI (ParentProcessId), без обхода цепочки —
+        /// для привязки cs2.exe к своему steam.exe.
+        /// </summary>
+        public static Process[] GetDirectChildProcessesByWmi(int parentProcessId, string win32ProcessName)
+        {
+            var list = new List<Process>();
+            if (parentProcessId <= 0 || string.IsNullOrEmpty(win32ProcessName))
+                return list.ToArray();
+            string safe = win32ProcessName.Replace("'", "");
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher(
+                    $"SELECT ProcessId FROM Win32_Process WHERE ParentProcessId = {parentProcessId} AND Name = '{safe}'"))
+                {
+                    foreach (ManagementObject mo in searcher.Get())
+                    {
+                        try
+                        {
+                            int id = Convert.ToInt32((uint)mo["ProcessId"]);
+                            list.Add(Process.GetProcessById(id));
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetDirectChildProcessesByWmi: {ex.Message}");
+            }
+            return list.ToArray();
+        }
+
         public static bool IsChildProcess(Process process, int parentPID)
         {
             try

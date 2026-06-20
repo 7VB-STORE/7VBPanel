@@ -1,4 +1,5 @@
 ﻿using _7VBPanel.Components;
+using _7VBPanel.Managers;
 using _7VBPanel.Utils;
 using System;
 using System.Collections.Generic;
@@ -36,12 +37,13 @@ namespace _7VBPanel.Instances
             // Принудительно устанавливаем размер окна
             Task.Run(() =>
             {
+                SettingsManager.GetCs2WindowClientSize(out int w, out int h);
                 int attempts = 0;
                 while (attempts < 10)
                 {
-                    if (Win32.ForceWindowSize(CS2Process.MainWindowHandle, 360, 270))
+                    if (Win32.ForceWindowSize(CS2Process.MainWindowHandle, w, h))
                     {
-                        Console.WriteLine("✅ Размер окна успешно изменен на 360x270");
+                        Console.WriteLine($"✅ Размер окна изменён на {w}×{h} (как в CS2Arguments -w/-h)");
                         break;
                     }
                     attempts++;
@@ -81,36 +83,91 @@ namespace _7VBPanel.Instances
         }
         public void ClickMouseInWindowCoordinates(int x, int y, int sleepTime = 500)
         {
+            if (CS2Process == null || CS2Process.MainWindowHandle == IntPtr.Zero)
+                return;
+            ClickMouseInClient(CS2Process.MainWindowHandle, x, y, sleepTime);
+        }
+
+        /// <summary>Клик в клиентских координатах указанного окна (то же окно, что при поиске кнопки Accept).</summary>
+        public void ClickMouseInClient(IntPtr clientHwnd, int x, int y, int sleepTime = 500)
+        {
             const int MOUSEEVENTF_LEFTDOWN = 0x02;
             const int MOUSEEVENTF_LEFTUP = 0x04;
-
-            Win32.SetForegroundWindow(CS2Process.MainWindowHandle);
-            MoveMouseToWindowCoordinates(x, y);
+            if (clientHwnd == IntPtr.Zero)
+                return;
+            var pt = new POINT { X = x, Y = y };
+            if (!Win32.ClientToScreen(clientHwnd, ref pt))
+                return;
+            Win32.SetForegroundWindow(clientHwnd);
+            Thread.Sleep(40);
+            Win32.SetCursorPos(pt.X, pt.Y);
             Thread.Sleep(sleepTime);
             Win32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, UIntPtr.Zero);
             Win32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, UIntPtr.Zero);
         }
 
+        /// <param name="autoAcceptGroupWave">Если true (волна AutoAccept) — кликать в каждом окне; иначе отмена при pe==done после приёма.</param>
+        public void TryClickMatchAcceptButton(bool autoAcceptGroupWave = false)
+        {
+            const int acceptLiftPx = 10;
+            if (CS2Process == null)
+                return;
+            if (!autoAcceptGroupWave && accountInstance != null)
+            {
+                string pe = accountInstance.LastMatchIdCompact;
+                string done = accountInstance.LastAcceptedMatchIdCompact;
+                if (!string.IsNullOrEmpty(done) && !string.IsNullOrEmpty(pe) && pe == done)
+                {
+                    PanelLog.Line($"[AutoAccept] {accountInstance.Login} клик отменён: в логе снова тот же id={done}, он уже был принят");
+                    return;
+                }
+            }
+            try
+            {
+                CS2Process.Refresh();
+            }
+            catch
+            {
+            }
+            IntPtr h = Win32.FindLargestTopLevelWindowForProcessId(CS2Process.Id);
+            if (h == IntPtr.Zero)
+                h = CS2Process.MainWindowHandle;
+            if (h == IntPtr.Zero)
+                return;
+
+            Thread.Sleep(1000);
+
+            if (MatchAcceptButtonFinder.TryGetClickClientCoords(h, out int cx, out int cy))
+            {
+                cy = Math.Max(1, cy - acceptLiftPx);
+                string who = accountInstance?.Login ?? "?";
+                PanelLog.Line($"[AutoAccept] {who} ACCEPT по цвету → ({cx},{cy}) [Y−{acceptLiftPx}px]");
+                ClickMouseInClient(h, cx, cy, 280);
+                return;
+            }
+            SettingsManager.GetCs2WindowClientSize(out int cw, out int ch);
+            if (cw <= 0) cw = 360;
+            if (ch <= 0) ch = 270;
+            int fx = Math.Max(1, cw / 2);
+            int fy = Math.Max(1, (int)(ch * 0.80) - acceptLiftPx);
+            string who2 = accountInstance?.Login ?? "?";
+            PanelLog.Line($"[AutoAccept] {who2} кнопка не распознана, fallback ({fx},{fy})");
+            ClickMouseInClient(h, fx, fy, 280);
+        }
+
         public void MoveMouseToWindowCoordinates(int x, int y)
         {
-            Point windowPosition = Win32.GetWindowPosition(CS2Process.MainWindowHandle);
+            if (CS2Process == null || CS2Process.MainWindowHandle == IntPtr.Zero)
+                return;
 
-            Size borderSize = Win32.GetWindowBorderSize(CS2Process.MainWindowHandle);
-
-            int correctedX = (int)(windowPosition.X + x);
-            int correctedY = (int)(windowPosition.Y + y);
+            // (x, y) — в координатах клиентской области окна; раньше складывали с DWM-верхом без non-client смещения — курсор уезжал
+            var pt = new POINT { X = x, Y = y };
+            if (!Win32.ClientToScreen(CS2Process.MainWindowHandle, ref pt))
+                return;
 
             Win32.SetForegroundWindow(CS2Process.MainWindowHandle);
-            IntPtr hdc = Win32.GetDC(IntPtr.Zero);
-
-            int screenWidth = Win32.GetDeviceCaps(hdc, Win32.DESKTOPHORZRES);
-            int screenHeight = Win32.GetDeviceCaps(hdc, Win32.DESKTOPVERTRES);
-
-            Win32.ReleaseDC(IntPtr.Zero, hdc);
-
-            int ConvertedX = (int)(65535 * (correctedX + 1) / screenWidth);
-            int ConvertedY = (int)(65535 * (correctedY + 1) / screenHeight);
-            inputSimulator.Mouse.MoveMouseTo(ConvertedX, ConvertedY);
+            Thread.Sleep(30);
+            Win32.SetCursorPos(pt.X, pt.Y);
         }
 
     }

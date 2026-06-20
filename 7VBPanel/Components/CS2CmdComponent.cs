@@ -1,5 +1,6 @@
 ﻿using _7VBPanel.Instances;
 using _7VBPanel.Managers;
+using _7VBPanel.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +58,21 @@ namespace _7VBPanel.Components
                     StreamReader streamReader = new StreamReader(stream);
                     text = streamReader.ReadToEnd();
                 }
+                // Как FSN process_log_line: match_id=(\d+) → base62, общий id для AutoAccept
+                var matchLog = Regex.Matches(text, @"match_id=(\d+)", RegexOptions.IgnoreCase);
+                if (matchLog.Count > 0
+                    && long.TryParse(matchLog[matchLog.Count - 1].Groups[1].Value, out long matchId))
+                {
+                    accountInstance.SetLastMatchIdFromLogDecimal(matchId);
+                }
+
+                FarmLogParser.Count(text, out int ctScored, out int tScored, out long roundStarts);
+                accountInstance.ApplyFarmLogCounts(ctScored, tScored, roundStarts);
+
+                string teamFromLog = FarmLogParser.TryParsePlayerTeam(text);
+                if (!string.IsNullOrEmpty(teamFromLog))
+                    accountInstance.SetFarmTeam(teamFromLog, "con_log");
+
                 if (text.Contains("CSGO_GAME_UI_STATE_INGAME -> CSGO_GAME_UI_STATE_MAINMENU"))
                 {
                     accountInstance.AccountStatus = EAccountStatus.InMainMenu;

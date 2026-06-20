@@ -56,6 +56,12 @@ namespace _7VBPanel.Utils
         public const int DESKTOPHORZRES = 118;
         public const int DESKTOPVERTRES = 117;
 
+        // Виртуальный экран (все мониторы), пиксели — для SetWindowPos
+        public const int SM_XVIRTUALSCREEN = 76;
+        public const int SM_YVIRTUALSCREEN = 77;
+        public const int SM_CXVIRTUALSCREEN = 78;
+        public const int SM_CYVIRTUALSCREEN = 79;
+
         private const uint SMTO_ABORTIFHUNG = 0x0002;
         private const uint WM_NULL = 0x0000;
 
@@ -116,11 +122,20 @@ namespace _7VBPanel.Utils
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetCursorPos(int X, int Y);
+
         [DllImport("user32.dll")]
         public static extern bool SetWindowText(IntPtr hWnd, string lpString);
 
         [DllImport("user32.dll")]
         public static extern bool SetProcessDPIAware();
+
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(int nIndex);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
@@ -174,6 +189,37 @@ namespace _7VBPanel.Utils
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetConsoleWindow();
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetConsoleOutputCP(uint wCodePageID);
+
+        /// <summary>Окно консоли для <see cref="Console"/>. В WinExe нельзя вызывать <see cref="Console.SetOut"/>, иначе буфер часто пуст и логи не видны.</summary>
+        public static void ShowConsole()
+        {
+            if (GetConsoleWindow() != IntPtr.Zero)
+                return;
+            if (!AllocConsole())
+                return;
+            try
+            {
+                SetConsoleOutputCP(65001);
+                Console.OutputEncoding = new UTF8Encoding(false);
+                Console.InputEncoding = new UTF8Encoding(false);
+                Console.Title = "7VBPanel";
+            }
+            catch
+            {
+            }
+        }
+
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
@@ -199,6 +245,14 @@ namespace _7VBPanel.Utils
         [DllImport("user32.dll")]
         public static extern bool IsWindow(IntPtr hWnd);
 
+        public const uint GW_OWNER = 4;
+
+        [DllImport("user32.dll")]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
 
         [DllImport("user32.dll")]
         public static extern bool IsWindowEnabled(IntPtr hWnd);
@@ -216,6 +270,45 @@ namespace _7VBPanel.Utils
         public static extern bool EnableNonClientDpiScaling(IntPtr hWnd);
 
         // ==================== ДОБАВЛЕННЫЕ МЕТОДЫ ====================
+
+        /// <summary>
+        /// Top-level видимое окно процесса с максимальной площадью (для раскладки, когда
+        /// <see cref="Process.MainWindowHandle"/> неверен или у нескольких копий CS2).
+        /// </summary>
+        public static IntPtr FindLargestTopLevelWindowForProcessId(int processId)
+        {
+            if (processId <= 0)
+                return IntPtr.Zero;
+
+            IntPtr best = IntPtr.Zero;
+            int bestArea = 0;
+            EnumWindows(
+                (hWnd, lParam) =>
+                {
+                    GetWindowThreadProcessId(hWnd, out uint pid);
+                    if (pid != processId)
+                        return true;
+                    if (!IsWindow(hWnd) || !IsWindowVisible(hWnd))
+                        return true;
+                    if (GetWindow(hWnd, GW_OWNER) != IntPtr.Zero)
+                        return true;
+                    if (!GetWindowRect(hWnd, out RECT r))
+                        return true;
+                    int w = r.Right - r.Left;
+                    int h = r.Bottom - r.Top;
+                    if (w < 64 || h < 48)
+                        return true;
+                    int a = w * h;
+                    if (a > bestArea)
+                    {
+                        bestArea = a;
+                        best = hWnd;
+                    }
+                    return true;
+                },
+                IntPtr.Zero);
+            return best;
+        }
 
         /// <summary>
         /// Принудительно устанавливает размер окна с удалением рамок

@@ -10,7 +10,7 @@ WindowStyle="None"
 ResizeMode="NoResize"
 Background="Transparent"
 AllowsTransparency="True"
-Title="7VP Panel" Height="480" Width="900" MouseDown="Window_MouseDown" Loaded="Window_Loaded">
+       Title="7VP Panel" Height="480" Width="900" MouseDown="Window_MouseDown" Loaded="Window_Loaded" Closed="MainWindow_Closed">
     <Border x:Name="MainWindowXAML" CornerRadius="12" BorderThickness="4"  Padding="0" Background="#151515">
         <Grid>
             <Image Height="30" Source="/Resources/Icons/Discord.png"  Margin="736,59,116,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown_2" />
@@ -99,6 +99,8 @@ Title="7VP Panel" Height="480" Width="900" MouseDown="Window_MouseDown" Loaded="
             <Elements:ButtonWIthTextOnly ButtonText="Shuffle Lobbies" HorizontalAlignment="Left" Margin="321,283,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_ButtonClick_4"/>
             <Elements:ButtonWIthTextOnly ButtonText="Collect Lobbies" HorizontalAlignment="Left" Margin="321,333,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_CollectLobbies"/>
             <Elements:ButtonWIthTextOnly ButtonText="Disban Lobbies" HorizontalAlignment="Left" Margin="321,368,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_DisbanLobbies"/>
+            <Elements:ButtonWIthTextOnly x:Name="AutoAcceptButton" ButtonText="Auto accept OFF" HorizontalAlignment="Left" Margin="484,368,0,0" VerticalAlignment="Top" Height="30" Width="130" ButtonClick="ButtonWIthTextOnly_AutoAccept"/>
+            <Elements:StartFarmButton x:Name="FarmButton" HorizontalAlignment="Left" Margin="484,333,0,0" VerticalAlignment="Top"/>
             <Image Height="30" Source="/Resources/Icons/Telegram.png" Margin="784,59,68,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown_1" />
             <Image Height="30" Source="/Resources/Icons/WebSite.png" Margin="688,59,164,383" RenderTransformOrigin="1.422,0.622" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
             <Image Source="/Resources/Icons/Logo2.png" Margin="390,56,449,384" RenderTransformOrigin="1.422,0.622" />

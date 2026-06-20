@@ -277,19 +277,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Components\CS2CmdComponent.cs" />
     <Compile Include="Components\CS2WindowComponent.cs" />
     <Compile Include="Instances\AccountInstance.cs" />
     <Compile Include="Instances\CS2Instance.cs" />
     <Compile Include="Instances\LobbyInstance.cs" />
+    <Compile Include="Instances\MutexCloser.cs" />
     <Compile Include="Instances\SteamInstance.cs" />
     <Compile Include="Managers\AccountManager.cs" />
+    <Compile Include="Managers\AutoAcceptManager.cs" />
+    <Compile Include="Managers\FarmManager.cs" />
+    <Compile Include="Managers\GsiListener.cs" />
+    <Compile Include="Managers\LobbyState.cs" />
     <Compile Include="Resources\Files.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Files.resx</DependentUpon>
     </Compile>
     <Compile Include="Structures\VideoAdapter.cs" />
+    <Compile Include="Utils\Base62Utils.cs" />
+    <Compile Include="Utils\MatchAcceptButtonFinder.cs" />
+    <Compile Include="Utils\PanelLog.cs" />
     <Compile Include="Utils\CS2Optimizer.cs" />
+    <Compile Include="Utils\FarmLogParser.cs" />
+    <Compile Include="Utils\TeamDetector.cs" />
+    <Compile Include="Utils\TeamHelper.cs" />
+    <Compile Include="Utils\MacroPlayer.cs" />
+    <Compile Include="Utils\SideDetector.cs" />
     <Compile Include="Utils\HardwareUtils.cs" />
     <Compile Include="Utils\ProcessesUtils.cs" />
     <Compile Include="Utils\SmallUtils.cs" />
@@ -433,6 +447,13 @@
 
 del /Q "$(TargetDir)\*.config"
 
-del /Q "$(TargetDir)\*.pdb"</PostBuildEvent>
+del /Q "$(TargetDir)\*.pdb"
+
+copy "$(ProjectDir)Resources\Files\handle.exe" "$(TargetDir)handle.exe"
+
+copy /Y "$(ProjectDir)..\macro_T.json" "$(TargetDir)macro_T.json"
+
+copy /Y "$(ProjectDir)..\macro_CT.json" "$(TargetDir)macro_CT.json"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

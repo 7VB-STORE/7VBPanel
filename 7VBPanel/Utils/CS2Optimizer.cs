@@ -29,6 +29,18 @@ namespace _7VBPanel.Utils
         }
         public static async Task SetupCS2Files(string steam_id_32, string steam_path, string cs2_path, string login)
         {
+            // Изолированная папка для каждого аккаунта (теперь используется PanelData)
+            string baseProfilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PanelData", login);
+            string userdataPath = Path.Combine(baseProfilePath, "AppData", "Local", "Steam", "userdata");
+
+            // Создаём структуру папок
+            Directory.CreateDirectory(userdataPath);
+            Directory.CreateDirectory(userdataPath + "\\" + steam_id_32);
+            Directory.CreateDirectory(userdataPath + "\\" + steam_id_32 + "\\730");
+            Directory.CreateDirectory(userdataPath + "\\" + steam_id_32 + "\\config");
+            Directory.CreateDirectory(userdataPath + "\\" + steam_id_32 + "\\730\\local");
+            Directory.CreateDirectory(userdataPath + "\\" + steam_id_32 + "\\730\\local\\cfg");
+            
             try
             {
                 if (Directory.Exists(cs2_path + "\\game\\csgo\\panorama\\videos"))
@@ -66,32 +78,33 @@ namespace _7VBPanel.Utils
             {
                 File.Delete(cs2_path + "\\game\\csgo\\cfg\\boost.cfg");
             }
-            File.WriteAllText(cs2_path + "\\game\\csgo\\cfg\\boost.cfg", SettingsManager.GetAutoExecFileSettings());
+            // Добавляем -allowmultiple в boost.cfg
+            File.WriteAllText(cs2_path + "\\game\\csgo\\cfg\\boost.cfg", "-allowmultiple" + Environment.NewLine + SettingsManager.GetAutoExecFileSettings());
             try
             {
-                Directory.CreateDirectory(steam_path + "\\userdata");
-                Directory.CreateDirectory(steam_path + "\\userdata\\" + steam_id_32);
-                Directory.CreateDirectory(steam_path + "\\userdata\\" + steam_id_32 + "\\730");
-                Directory.CreateDirectory(steam_path + "\\userdata\\" + steam_id_32 + "\\config");
-                Directory.CreateDirectory(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local");
-                Directory.CreateDirectory(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg");
-                if (File.Exists(steam_path + "\\userdata\\" + steam_id_32 + "\\config\\localconfig.vdf"))
+                string localConfigPath = userdataPath + "\\" + steam_id_32 + "\\config\\localconfig.vdf";
+                if (File.Exists(localConfigPath))
                 {
-                    SetFileReadAccess(steam_path + "\\userdata\\" + steam_id_32 + "\\config\\localconfig.vdf", setReadOnly: false);
+                    SetFileReadAccess(localConfigPath, setReadOnly: false);
                 }
-                File.WriteAllText(steam_path + "\\userdata\\" + steam_id_32 + "\\config\\localconfig.vdf", Encoding.UTF8.GetString(Convert.FromBase64String(LocalConfig)).Replace("????", $"-con_logfile {login}.log -allowmultiple -exec boost.cfg -language english " + SettingsManager.CS2Arguments));
-                if (File.Exists(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_video.txt"))
+                File.WriteAllText(localConfigPath, Encoding.UTF8.GetString(Convert.FromBase64String(LocalConfig)).Replace("????", $"-con_logfile {login}.log -allowmultiple -exec boost.cfg -language english " + SettingsManager.CS2Arguments));
+                
+                string videoConfigPath = userdataPath + "\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_video.txt";
+                if (File.Exists(videoConfigPath))
                 {
-                    SetFileReadAccess(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_video.txt", setReadOnly: false);
+                    SetFileReadAccess(videoConfigPath, setReadOnly: false);
                 }
-                File.WriteAllText(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_video.txt", SettingsManager.GetVideoFileSettings());
-                SetFileReadAccess(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_video.txt", setReadOnly: true);
-                if (File.Exists(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_machine_convars.vcfg"))
+                File.WriteAllText(videoConfigPath, SettingsManager.GetVideoFileSettings());
+                SetFileReadAccess(videoConfigPath, setReadOnly: true);
+                
+                string machineConfigPath = userdataPath + "\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_machine_convars.vcfg";
+                if (File.Exists(machineConfigPath))
                 {
-                    SetFileReadAccess(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_machine_convars.vcfg", setReadOnly: false);
+                    SetFileReadAccess(machineConfigPath, setReadOnly: false);
                 }
-                File.WriteAllText(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_machine_convars.vcfg", SettingsManager.GetMachineConvarsFileSettings());
-                SetFileReadAccess(steam_path + "\\userdata\\" + steam_id_32 + "\\730\\local\\cfg\\cs2_machine_convars.vcfg", setReadOnly: true);
+                File.WriteAllText(machineConfigPath, SettingsManager.GetMachineConvarsFileSettings());
+                SetFileReadAccess(machineConfigPath, setReadOnly: true);
+                
                 if (!File.Exists(cs2_path + "\\game\\csgo\\cfg\\gamestate_integration_GSI.cfg"))
                 {
                     File.WriteAllText(cs2_path + "\\game\\csgo\\cfg\\gamestate_integration_GSI.cfg", Encoding.UTF8.GetString(Convert.FromBase64String(GameStateConfig)));
