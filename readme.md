@@ -1,5 +1,5 @@
 # 💫 About Me:
-Free PanelCs2 7VB<br>Start steam account<br>auto steam guard <br>window placement<br>Lobby collection <br> TG: https://t.me/+bU6CZSG7onU3ZDli - CHAT FARM CS2( **ECLIPSE//7VB** ) <br><br>(the run panel from the administrator.
+without a sandbox<br>Free PanelCs2 7VB<br>Start steam account<br>auto steam guard <br>window placement<br>Lobby collection <br> TG: https://t.me/+bU6CZSG7onU3ZDli - CHAT FARM CS2( **ECLIPSE//7VB** ) <br><br>(the run panel from the administrator.
 handle.exe It must be in the folder with the panel.<br>
 #
 ![C#](https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=csharp&logoColor=white)  <br> thanks [ IDK , Emil , IgnatS]
